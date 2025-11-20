@@ -45,7 +45,7 @@ uint32_t jenkins_hash(const char *key) {
 }
 
 // -------------------------------------------------
-// Insert
+// Insert (sorted by key / hash)
 // -------------------------------------------------
 int insertRecord(hashTable *t, const char *name, uint32_t salary) {
     uint32_t h = jenkins_hash(name);
@@ -53,24 +53,44 @@ int insertRecord(hashTable *t, const char *name, uint32_t salary) {
     // LOG: Write Lock Acquired
     pthread_rwlock_wrlock(&t->lock);
 
-    // Search for duplicate hash
+    // Check for duplicate
     hashRecord *curr = t->head;
     while (curr) {
         if (curr->hash == h) {
-            // LOG: Write Lock Released
             pthread_rwlock_unlock(&t->lock);
-            return -1; // Duplicate
+            return -1; // duplicate
         }
         curr = curr->next;
     }
 
-    // Insert new node
+    // Create new node
     hashRecord *node = malloc(sizeof(hashRecord));
     node->hash = h;
     strcpy(node->name, name);
     node->salary = salary;
-    node->next = t->head;
-    t->head = node;
+    node->next = NULL;
+
+    // CASE 1: empty list OR insert at head (h < head->hash)
+    if (t->head == NULL || h < t->head->hash) {
+        node->next = t->head;
+        t->head = node;
+
+        pthread_rwlock_unlock(&t->lock);
+        return 0;
+    }
+
+    // CASE 2: insert somewhere after head
+    hashRecord *prev = t->head;
+    curr = t->head->next;
+
+    while (curr && curr->hash < h) {
+        prev = curr;
+        curr = curr->next;
+    }
+
+    // Insert between prev and curr
+    prev->next = node;
+    node->next = curr;
 
     // LOG: Write Lock Released
     pthread_rwlock_unlock(&t->lock);
@@ -93,17 +113,15 @@ int deleteRecord(hashTable *t, const char *name) {
         if (curr->hash == h) {
             if (prev) prev->next = curr->next;
             else t->head = curr->next;
-            free(curr);
 
-            // LOG: Write Lock Released
+            free(curr);
             pthread_rwlock_unlock(&t->lock);
-            return 0; // Deleted
+            return 0;
         }
         prev = curr;
         curr = curr->next;
     }
 
-    // LOG: Write Lock Released
     pthread_rwlock_unlock(&t->lock);
     return -1; // Not found
 }
@@ -121,15 +139,12 @@ int updateSalary(hashTable *t, const char *name, uint32_t newSalary) {
     while (curr) {
         if (curr->hash == h) {
             curr->salary = newSalary;
-
-            // LOG: Write Lock Released
             pthread_rwlock_unlock(&t->lock);
             return 0;
         }
         curr = curr->next;
     }
 
-    // LOG: Write Lock Released
     pthread_rwlock_unlock(&t->lock);
     return -1; // Not found
 }
@@ -146,14 +161,12 @@ hashRecord* searchRecord(hashTable *t, const char *name) {
     hashRecord *curr = t->head;
     while (curr) {
         if (curr->hash == h) {
-            // LOG: Read Lock Released
             pthread_rwlock_unlock(&t->lock);
             return curr;
         }
         curr = curr->next;
     }
 
-    // LOG: Read Lock Released
     pthread_rwlock_unlock(&t->lock);
     return NULL;
 }
@@ -162,7 +175,6 @@ hashRecord* searchRecord(hashTable *t, const char *name) {
 // Print entire database
 // -------------------------------------------------
 void printAll(hashTable *t, FILE *out) {
-    // LOG: Read Lock Acquired
     pthread_rwlock_rdlock(&t->lock);
 
     fprintf(out, "Current Database:\n");
@@ -173,7 +185,5 @@ void printAll(hashTable *t, FILE *out) {
         curr = curr->next;
     }
 
-    // LOG: Read Lock Released
     pthread_rwlock_unlock(&t->lock);
 }
-
