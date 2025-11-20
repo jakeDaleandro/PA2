@@ -27,6 +27,5 @@ int insertRecord(hashTable *t, const char *name, uint32_t salary);
 int deleteRecord(hashTable *t, const char *name);
 int updateSalary(hashTable *t, const char *name, uint32_t newSalary);
 hashRecord* searchRecord(hashTable *t, const char *name);
-void printAll(hashTable *t);
-
+void printAll(hashTable *t, FILE *out);
 #endif

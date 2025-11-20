@@ -15,6 +15,14 @@ int main() {
         return 1;
     }
 
+    // NEW: output file
+    FILE *out = fopen("output.txt", "w");
+    if (!out) {
+        printf("Could not open output.txt\n");
+        fclose(fp);
+        return 1;
+    }
+
     char line[MAX_LINE];
 
     while (fgets(line, MAX_LINE, fp)) {
@@ -26,16 +34,15 @@ int main() {
         // Remove newline
         line[strcspn(line, "\n")] = 0;
 
-        // Identify which command it is
         if (strncmp(line, "insert", 6) == 0) {
             sscanf(line, "insert,%49[^,],%19[^,],%19s", name, salaryStr, priorityStr);
             uint32_t salary = atoi(salaryStr);
             uint32_t h = jenkins_hash(name);
 
             if (insertRecord(&table, name, salary) == 0) {
-                printf("Inserted %u,%s,%u\n", h, name, salary);
+                fprintf(out, "Inserted %u,%s,%u\n", h, name, salary);
             } else {
-                printf("Insert failed. Entry %u is a duplicate.\n", h);
+                fprintf(out, "Insert failed. Entry %u is a duplicate.\n", h);
             }
         }
 
@@ -44,9 +51,9 @@ int main() {
             uint32_t h = jenkins_hash(name);
 
             if (deleteRecord(&table, name) == 0) {
-                printf("Deleted record for %u,%s\n", h, name);
+                fprintf(out, "Deleted record for %u,%s\n", h, name);
             } else {
-                printf("Entry %u not deleted. Not in database.\n", h);
+                fprintf(out, "Entry %u not deleted. Not in database.\n", h);
             }
         }
 
@@ -56,9 +63,9 @@ int main() {
             uint32_t h = jenkins_hash(name);
 
             if (updateSalary(&table, name, salary) == 0) {
-                printf("Updated record %u to salary %u\n", h, salary);
+                fprintf(out, "Updated record %u to salary %u\n", h, salary);
             } else {
-                printf("Update failed. Entry %u not found.\n", h);
+                fprintf(out, "Update failed. Entry %u not found.\n", h);
             }
         }
 
@@ -67,22 +74,23 @@ int main() {
 
             hashRecord *r = searchRecord(&table, name);
             if (r) {
-                printf("Found: %u,%s,%u\n", r->hash, r->name, r->salary);
+                fprintf(out, "Found: %u,%s,%u\n", r->hash, r->name, r->salary);
             } else {
-                printf("No Record Found: %s\n", name);
+                fprintf(out, "No Record Found: %s\n", name);
             }
         }
 
         else if (strncmp(line, "print", 5) == 0) {
-            printAll(&table);
+            printAll(&table, out);
         }
     }
 
     fclose(fp);
 
     // Final required print
-    printAll(&table);
+    printAll(&table, out);
 
+    fclose(out);
     destroyTable(&table);
     return 0;
 }

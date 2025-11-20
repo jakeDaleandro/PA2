@@ -161,18 +161,19 @@ hashRecord* searchRecord(hashTable *t, const char *name) {
 // -------------------------------------------------
 // Print entire database
 // -------------------------------------------------
-void printAll(hashTable *t) {
+void printAll(hashTable *t, FILE *out) {
     // LOG: Read Lock Acquired
     pthread_rwlock_rdlock(&t->lock);
 
-    printf("Current Database:\n");
+    fprintf(out, "Current Database:\n");
 
     hashRecord *curr = t->head;
     while (curr) {
-        printf("%u,%s,%u\n", curr->hash, curr->name, curr->salary);
+        fprintf(out, "%u,%s,%u\n", curr->hash, curr->name, curr->salary);
         curr = curr->next;
     }
 
     // LOG: Read Lock Released
     pthread_rwlock_unlock(&t->lock);
 }
+
