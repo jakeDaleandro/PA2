@@ -30,7 +30,7 @@ $(TARGET): $(OBJS)
 # Clean up build files and the log file
 # FIX: Using 'cmd /c del /q' to robustly delete files in Windows environments.
 clean:
-	-cmd /c del /q $(TARGET).exe $(OBJS) output.txt >nul 2>&1
+	-cmd /c del /q $(TARGET).exe $(OBJS) output.txt hash.log >nul 2>&1
 	# Keep this fallback for Unix-like shells
-	-rm -f $(TARGET) $(OBJS) output.txt
+	-rm -f $(TARGET) $(OBJS) output.txt hash.log
 	
