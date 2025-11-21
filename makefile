@@ -5,7 +5,11 @@ CC = gcc
 CFLAGS = -Wall -Wextra -pthread -g # -pthread links the pthread library
 
 # Target executable name
+<<<<<<< HEAD
 TARGET = hashLogger
+=======
+TARGET = chash
+>>>>>>> dded14738bdcc4f1325596cb2e1f9e5fb260f3a1
 
 # Source files
 SRCS = main.c hash.c
@@ -33,7 +37,11 @@ clean:
 	-cmd /c del /q $(TARGET).exe $(OBJS) output.txt hash.log >nul 2>&1
 	# Keep this fallback for Unix-like shells
 	-rm -f $(TARGET) $(OBJS) output.txt hash.log
+<<<<<<< HEAD
 	
 
 run:
 	./$(TARGET)
+=======
+	
+>>>>>>> dded14738bdcc4f1325596cb2e1f9e5fb260f3a1

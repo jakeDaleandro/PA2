@@ -19,6 +19,7 @@ insert,Cloud Strife,75000,16
 insert,Samus Aran,78000,17
 insert,Link,82000,18
 search,Cloud Strife,0,19
+search,Link,0,20
 print,0,0,21
 delete,Todd Howard,0,22
 search,Todd Howard,0,23
