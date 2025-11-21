@@ -5,6 +5,8 @@ Full file list:
 -hash.h
 -makefile
 -commands.txt
+-timestamp.c
+-timestamp.h
 
 Use "make" to compile the executable (hashlogger.exe)
 use "make run" to compile and run the executable (requires a comannds.txt file)
