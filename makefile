@@ -7,7 +7,7 @@ CFLAGS = -Wall -Wextra -pthread -g # -pthread links the pthread library
 # Target executable name
 TARGET = hashLogger
 # Source files
-SRCS = main.c hash.c timestamp.c worker.c log.c
+SRCS = main.c hash.c timestamp.c worker.c log.c ops.c locks.c
 
 # Object files
 OBJS = $(SRCS:.c=.o)

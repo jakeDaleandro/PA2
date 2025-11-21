@@ -2,6 +2,13 @@
     "files.associations": {
         "pthread.h": "c",
         "stdio.h": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "log.h": "c",
+        "stdint.h": "c",
+        "hash.h": "c",
+        "unistd.h": "c",
+        "ops.h": "c",
+        "string.h": "c",
+        "timestamp.h": "c"
     }
 }

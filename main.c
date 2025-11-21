@@ -7,6 +7,8 @@
 #include "worker.h"
 #include "hash.h"
 #include "log.h"
+#include "locks.h"
+#include "ops.h"
 
 hashTable table;
 
